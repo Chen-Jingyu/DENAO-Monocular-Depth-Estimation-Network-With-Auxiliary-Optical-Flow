@@ -1,0 +1,4066 @@
+############################### data layers ###############################
+layer{
+  name: "data_rgb/ref"
+  type: "Input"
+  top: "data_rgb/ref"
+  input_param {shape: { dim: 4 dim: 3 dim: 480 dim: 640}}
+}
+layer{
+  name: "data_rgb/ref_depth_layer"
+  type: "Input"
+  top: "data_rgb/ref_depth_layer"
+  input_param {shape: { dim: 1 dim: 3 dim: 480 dim: 640}}
+}
+layer{
+  name: "data_rgb/nei"
+  type: "Input"
+  top: "data_rgb/nei"
+  input_param {shape: { dim: 4 dim: 3 dim: 480 dim: 640 } }
+}
+layer {
+  name: "data_K"
+  type: "Input"
+  top: "data_K"
+  input_param { shape: { dim: 4 dim: 4 dim: 1 dim: 1 } }
+}
+layer {
+  name: "data_T"
+  type: "Input"
+  top: "data_T"
+  input_param { shape: { dim: 4 dim: 1 dim: 4 dim: 4 } }
+}
+
+# resize input image size from 640x480 to 320x240 with ave pooling
+layer {
+  name: "pooling/ref"
+  type: "Pooling"
+  bottom: "data_rgb/ref"
+  top: "pool_rgb/ref"
+  pooling_param {
+    pool: AVE
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "pooling/ref_depth_layer"
+  type: "Pooling"
+  bottom: "data_rgb/ref_depth_layer"
+  top: "pool_rgb/ref_depth_layer"
+  pooling_param {
+    pool: AVE
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "pooling/nei"
+  type: "Pooling"
+  bottom: "data_rgb/nei"
+  top: "pool_rgb/nei"
+  pooling_param {
+    pool: AVE
+    kernel_size: 2
+    stride: 2
+  }
+}
+
+############################### layer scale param ###############################
+
+layer{
+  name: "dummydata/0"
+  type: "DummyData"
+  top: "dummydata/0"
+  dummy_data_param{
+    shape: { dim: 3 dim: 2 dim: 240 dim: 320 }
+      data_filler: { type: 'constant' }
+  }
+}
+layer{
+  name: "dummydata/1"
+  type: "DummyData"
+  top: "dummydata/1"
+  dummy_data_param{
+    shape: { dim: 3 dim: 2 dim: 120 dim: 160 }
+      data_filler: { type: 'constant' }
+  }
+}
+layer{
+  name: "dummydata/2"
+  type: "DummyData"
+  top: "dummydata/2"
+  dummy_data_param{
+    shape: { dim: 3 dim: 2 dim: 60 dim: 80 }
+      data_filler: { type: 'constant' }
+  }
+}
+layer{
+  name: "dummydata/3"
+  type: "DummyData"
+  top: "dummydata/3"
+  dummy_data_param{
+    shape: { dim: 3 dim: 2 dim: 30 dim: 40 }
+      data_filler: { type: 'constant' }
+  }
+}
+
+layer {
+  name: "resample_rgb_ref/0"
+  type: "Resample"
+  bottom: "data_rgb/ref"
+  bottom: "dummydata/0"
+  top: "data_rgb_ref/0"
+  resample_param {
+    type: NEAREST
+    antialias: false
+  }
+}
+layer {
+  name: "resample_rgb_ref/1"
+  type: "Resample"
+  bottom: "data_rgb/ref"
+  bottom: "dummydata/1"
+  top: "data_rgb_ref/1"
+  resample_param {
+    type: NEAREST
+    antialias: false
+  }
+}
+layer {
+  name: "resample_rgb_ref/2"
+  type: "Resample"
+  bottom: "data_rgb/ref"
+  bottom: "dummydata/2"
+  top: "data_rgb_ref/2"
+  resample_param {
+    type: NEAREST
+    antialias: false
+  }
+}
+layer {
+  name: "resample_rgb_ref/3"
+  type: "Resample"
+  bottom: "data_rgb/ref"
+  bottom: "dummydata/3"
+  top: "data_rgb_ref/3"
+  resample_param {
+    type: NEAREST
+    antialias: false
+  }
+}
+
+layer {
+  name: "resample_rgb_nei/0"
+  type: "Resample"
+  bottom: "data_rgb/nei"
+  bottom: "dummydata/0"
+  top: "data_rgb_nei/0"
+  resample_param {
+    type: NEAREST
+    antialias: false
+  }
+}
+layer {
+  name: "resample_rgb_nei/1"
+  type: "Resample"
+  bottom: "data_rgb/nei"
+  bottom: "dummydata/1"
+  top: "data_rgb_nei/1"
+  resample_param {
+    type: NEAREST
+    antialias: false
+  }
+}
+layer {
+  name: "resample_rgb_nei/2"
+  type: "Resample"
+  bottom: "data_rgb/nei"
+  bottom: "dummydata/2"
+  top: "data_rgb_nei/2"
+  resample_param {
+    type: NEAREST
+    antialias: false
+  }
+}
+layer {
+  name: "resample_rgb_nei/3"
+  type: "Resample"
+  bottom: "data_rgb/nei"
+  bottom: "dummydata/3"
+  top: "data_rgb_nei/3"
+  resample_param {
+    type: NEAREST
+    antialias: false
+  }
+}
+
+layer {
+  name: "scale_K/0"
+  type: "Scale"
+  bottom: "data_K"
+  top: "data_K/0"
+  param {
+    lr_mult: 0
+  }
+  scale_param {
+    filler {
+      type: "constant"
+      value: 0.5
+    }
+  }
+}
+layer {
+  name: "scale_K/1"
+  type: "Scale"
+  bottom: "data_K"
+  top: "data_K/1"
+  param {
+    lr_mult: 0
+  }
+  scale_param {
+    filler {
+      type: "constant"
+      value: 0.25
+    }
+  }
+}
+layer {
+  name: "scale_K/2"
+  type: "Scale"
+  bottom: "data_K"
+  top: "data_K/2"
+  param {
+    lr_mult: 0
+  }
+  scale_param {
+    filler {
+      type: "constant"
+      value: 0.125
+    }
+  }
+}
+layer {
+  name: "scale_K/3"
+  type: "Scale"
+  bottom: "data_K"
+  top: "data_K/3"
+  param {
+    lr_mult: 0
+  }
+  scale_param {
+    filler {
+      type: "constant"
+      value: 0.0625
+    }
+  }
+}
+
+
+############################### optical flow network ###############################
+
+layer {
+  name: "conv1/opt"
+  type: "Convolution"
+  bottom: "pool_rgb/ref"
+  bottom: "pool_rgb/nei"
+  top: "conv1a/opt"
+  top: "conv1b/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad_h: 11
+    pad_w: 3
+    kernel_size: 7
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1a/opt"
+  type: "ReLU"
+  bottom: "conv1a/opt"
+  top: "conv1a/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "ReLU1b/opt"
+  type: "ReLU"
+  bottom: "conv1b/opt"
+  top: "conv1b/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv2/opt"
+  type: "Convolution"
+  bottom: "conv1a/opt"
+  bottom: "conv1b/opt"
+  top: "conv2a/opt"
+  top: "conv2b/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 2
+    kernel_size: 5
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2a/opt"
+  type: "ReLU"
+  bottom: "conv2a/opt"
+  top: "conv2a/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "ReLU2b/opt"
+  type: "ReLU"
+  bottom: "conv2b/opt"
+  top: "conv2b/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv3/opt"
+  type: "Convolution"
+  bottom: "conv2a/opt"
+  bottom: "conv2b/opt"
+  top: "conv3a/opt"
+  top: "conv3b/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 2
+    kernel_size: 5
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU3a/opt"
+  type: "ReLU"
+  bottom: "conv3a/opt"
+  top: "conv3a/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "ReLU3b/opt"
+  type: "ReLU"
+  bottom: "conv3b/opt"
+  top: "conv3b/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+# correlation layer
+layer {
+  name: "corr/opt"
+  type: "Correlation"
+  bottom: "conv3a/opt"
+  bottom: "conv3b/opt"
+  top: "corr/opt"
+  correlation_param {
+    pad: 15
+    kernel_size: 1
+    max_displacement: 15
+    stride_1: 1
+    stride_2: 1
+  }
+}
+layer {
+  name: "ReLUcorr/opt"
+  type: "ReLU"
+  bottom: "corr/opt"
+  top: "corr/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+# epipolar layer
+layer {
+  name: "epip/opt"
+  type: "OptEpip"
+  bottom: "conv3a/opt"
+  bottom: "data_T"
+  bottom: "data_K/3"
+  top: "optepip/opt"
+  correlation_param {
+    pad_w: 0
+    pad_h: 1
+    kernel_size: 1
+    max_displacement: 15
+    stride_1: 1
+    stride_2: 1
+  }
+}
+
+layer {
+  name: "corr_concat/opt"
+  type: "Concat"
+  bottom: "corr/opt"
+  bottom: "optepip/opt"
+  top: "corr_concat/opt"
+}
+layer {
+  name: "conv_corr_new/opt"
+  type: "Convolution"
+  bottom: "corr_concat/opt"
+  top: "conv_corr/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 420
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLUcorr/opt"
+  type: "ReLU"
+  bottom: "conv_corr/opt"
+  top: "conv_corr/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+# redirect layer
+layer {
+  name: "conv_redir/opt"
+  type: "Convolution"
+  bottom: "conv3a/opt"
+  top: "conv_redir/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 0
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLUredir/opt"
+  type: "ReLU"
+  bottom: "conv_redir/opt"
+  top: "conv_redir/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "Concat_corr/opt"
+  type: "Concat"
+  bottom: "conv_redir/opt"
+  bottom: "conv_corr/opt"
+  top: "concat_corr/opt"
+  concat_param {
+    axis: 1
+  }
+}
+layer {
+  name: "conv3_1/opt"
+  type: "Convolution"
+  bottom: "concat_corr/opt"
+  top: "conv3_1/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU3_1/opt"
+  type: "ReLU"
+  bottom: "conv3_1/opt"
+  top: "conv3_1/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv4/opt"
+  type: "Convolution"
+  bottom: "conv3_1/opt"
+  top: "conv4/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU4/opt"
+  type: "ReLU"
+  bottom: "conv4/opt"
+  top: "conv4/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv4_1/opt"
+  type: "Convolution"
+  bottom: "conv4/opt"
+  top: "conv4_1/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU4_1/opt"
+  type: "ReLU"
+  bottom: "conv4_1/opt"
+  top: "conv4_1/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv5/opt"
+  type: "Convolution"
+  bottom: "conv4_1/opt"
+  top: "conv5/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU5/opt"
+  type: "ReLU"
+  bottom: "conv5/opt"
+  top: "conv5/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv5_1/opt"
+  type: "Convolution"
+  bottom: "conv5/opt"
+  top: "conv5_1/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU5_1/opt"
+  type: "ReLU"
+  bottom: "conv5_1/opt"
+  top: "conv5_1/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv6/opt"
+  type: "Convolution"
+  bottom: "conv5_1/opt"
+  top: "conv6/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 1024
+    pad: 1
+    kernel_size: 3
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU6/opt"
+  type: "ReLU"
+  bottom: "conv6/opt"
+  top: "conv6/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv6_1/opt"
+  type: "Convolution"
+  bottom: "conv6/opt"
+  top: "conv6_1/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 1024
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU6_1/opt"
+  type: "ReLU"
+  bottom: "conv6_1/opt"
+  top: "conv6_1/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "deconv5/opt"
+  type: "Deconvolution"
+  bottom: "conv6_1/opt"
+  top: "deconv5/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLUde5/opt"
+  type: "ReLU"
+  bottom: "deconv5/opt"
+  top: "deconv5/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "Concat5/opt"
+  type: "Concat"
+  bottom: "conv5_1/opt"
+  bottom: "deconv5/opt"
+  top: "concat5/opt"
+}
+layer {
+  name: "deconv4/opt"
+  type: "Deconvolution"
+  bottom: "concat5/opt"
+  top: "deconv4/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLUde4/opt"
+  type: "ReLU"
+  bottom: "deconv4/opt"
+  top: "deconv4/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "Concat4/opt"
+  type: "Concat"
+  bottom: "conv4_1/opt"
+  bottom: "deconv4/opt"
+  top: "concat4/opt"
+}
+
+layer {
+  name: "conv4_up/opt"
+  type: "Convolution"
+  bottom: "concat4/opt"
+  top: "conv4_up/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU4_up/opt"
+  type: "ReLU"
+  bottom: "conv4_up/opt"
+  top: "conv4_up/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "deconv3/opt"
+  type: "Deconvolution"
+  bottom: "conv4_up/opt"
+  top: "deconv3/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLUde3/opt"
+  type: "ReLU"
+  bottom: "deconv3/opt"
+  top: "deconv3/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "Concat3/opt"
+  type: "Concat"
+  bottom: "conv3_1/opt"
+  bottom: "deconv3/opt"
+  top: "concat3/opt"
+}
+
+layer {
+  name: "conv3_up/opt"
+  type: "Convolution"
+  bottom: "concat3/opt"
+  top: "conv3_up/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU3_up/opt"
+  type: "ReLU"
+  bottom: "conv3_up/opt"
+  top: "conv3_up/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+############################### exchange block: output 30x40 optical flow from opt net ###############################
+
+layer {
+  name: "conv3_out_pre/opt"
+  type: "Convolution"
+  bottom: "conv3_up/opt"
+  top: "conv3_out_pre/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU3_out_pre/opt"
+  type: "ReLU"
+  bottom: "conv3_out_pre/opt"
+  top: "conv3_out_pre/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "conv3_out_new/opt"
+  type: "Convolution"
+  bottom: "conv3_out_pre/opt"
+  top: "conv3_out/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 2
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+
+layer{
+  name: "crop_opt_3/opt"
+  type: "Crop"
+  bottom: "conv3_out/opt"
+  bottom: "dummydata/3"
+  top: "crop_opt_3/opt"
+  crop_param{
+    axis: 2
+    offset: 1
+    offset: 0
+  }
+}
+
+############################### exchange block: output 30x40 depth to depth net ###############################
+
+layer{
+  name: "opt2depth_3"
+  type: "Opt2Depth"
+  bottom: "crop_opt_3/opt"
+  bottom: "data_T"
+  bottom: "data_K/3"
+  top: "depth_3/from_opt"
+}
+
+layer {
+  name: "Depth2invDepth_3"
+  type: "Power"
+  bottom: "depth_3/from_opt"
+  top: "invdepth_3/from_opt"
+  power_param {
+    power: -1
+    scale: 1
+    shift: 0.0001
+  }
+}
+
+layer {
+  name: "depthcheck_3"
+  type: "DepthCheck"
+  bottom: "invdepth_3/from_opt"
+  top: "invdepth_checked_3/from_opt"
+  power_param {
+    power: -1
+    scale: 1
+    shift: 0.0001
+  }
+}
+
+# preprocessing convolution layers before input depth map to depth network
+layer {
+  name: "conv3_depthpre/opt"
+  type: "Convolution"
+  bottom: "invdepth_checked_3/from_opt"
+  top: "conv3_depthpre/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad_h: 2
+    pad_w: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU3_depthpre/opt"
+  type: "ReLU"
+  bottom: "conv3_depthpre/opt"
+  top: "conv3_depthpre/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+############################### depth network ###############################
+
+layer {
+  name: "conv1/depth"
+  type: "Convolution"
+  bottom: "pool_rgb/ref_depth_layer"
+  top: "conv1/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad_h: 11
+    pad_w: 3
+    kernel_size: 7
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1/depth"
+  type: "ReLU"
+  bottom: "conv1/depth"
+  top: "conv1/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv2/depth"
+  type: "Convolution"
+  bottom: "conv1/depth"
+  top: "conv2/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 2
+    kernel_size: 5
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2/depth"
+  type: "ReLU"
+  bottom: "conv2/depth"
+  top: "conv2/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv3/depth"
+  type: "Convolution"
+  bottom: "conv2/depth"
+  top: "conv3/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 2
+    kernel_size: 5
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU3/depth"
+  type: "ReLU"
+  bottom: "conv3/depth"
+  top: "conv3/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "ReLU3/depth"
+  type: "ReLU"
+  bottom: "conv3/depth"
+  top: "conv3/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "conv3_1/depth"
+  type: "Convolution"
+  bottom: "conv3/depth"
+  top: "conv3_1/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU3_1/depth"
+  type: "ReLU"
+  bottom: "conv3_1/depth"
+  top: "conv3_1/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "concat_optdepth_3/depth"
+  type: "Concat"
+  bottom: "conv3_1/depth"
+  bottom: "conv3_depthpre/opt"
+  top: "conv3_1_concat/depth"
+}
+
+
+layer {
+  name: "conv4/depth"
+  type: "Convolution"
+  bottom: "conv3_1_concat/depth"
+  top: "conv4/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU4/depth"
+  type: "ReLU"
+  bottom: "conv4/depth"
+  top: "conv4/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv4_1/depth"
+  type: "Convolution"
+  bottom: "conv4/depth"
+  top: "conv4_1/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU4_1/depth"
+  type: "ReLU"
+  bottom: "conv4_1/depth"
+  top: "conv4_1/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv5/depth"
+  type: "Convolution"
+  bottom: "conv4_1/depth"
+  top: "conv5/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU5/depth"
+  type: "ReLU"
+  bottom: "conv5/depth"
+  top: "conv5/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv5_1/depth"
+  type: "Convolution"
+  bottom: "conv5/depth"
+  top: "conv5_1/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU5_1/depth"
+  type: "ReLU"
+  bottom: "conv5_1/depth"
+  top: "conv5_1/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv6/depth"
+  type: "Convolution"
+  bottom: "conv5_1/depth"
+  top: "conv6/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 1024
+    pad: 1
+    kernel_size: 3
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU6/depth"
+  type: "ReLU"
+  bottom: "conv6/depth"
+  top: "conv6/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv6_1/depth"
+  type: "Convolution"
+  bottom: "conv6/depth"
+  top: "conv6_1/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 1024
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU6_1/depth"
+  type: "ReLU"
+  bottom: "conv6_1/depth"
+  top: "conv6_1/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "deconv5/depth"
+  type: "Deconvolution"
+  bottom: "conv6_1/depth"
+  top: "deconv5/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLUde5/depth"
+  type: "ReLU"
+  bottom: "deconv5/depth"
+  top: "deconv5/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "Concat5/depth"
+  type: "Concat"
+  bottom: "conv5_1/depth"
+  bottom: "deconv5/depth"
+  top: "concat5/depth"
+}
+layer {
+  name: "deconv4/depth"
+  type: "Deconvolution"
+  bottom: "concat5/depth"
+  top: "deconv4/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLUde4/depth"
+  type: "ReLU"
+  bottom: "deconv4/depth"
+  top: "deconv4/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "Concat4/depth"
+  type: "Concat"
+  bottom: "conv4_1/depth"
+  bottom: "deconv4/depth"
+  top: "concat4/depth"
+}
+
+layer {
+  name: "conv4_up/depth"
+  type: "Convolution"
+  bottom: "concat4/depth"
+  top: "conv4_up/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU4_up/depth"
+  type: "ReLU"
+  bottom: "conv4_up/depth"
+  top: "conv4_up/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "deconv3/depth"
+  type: "Deconvolution"
+  bottom: "conv4_up/depth"
+  top: "deconv3/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLUde3/depth"
+  type: "ReLU"
+  bottom: "deconv3/depth"
+  top: "deconv3/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "Concat3/depth"
+  type: "Concat"
+  bottom: "conv3_1/depth"
+  bottom: "deconv3/depth"
+  top: "concat3/depth"
+}
+
+layer {
+  name: "conv3_up/depth"
+  type: "Convolution"
+  bottom: "concat3/depth"
+  top: "conv3_up/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU3_up/depth"
+  type: "ReLU"
+  bottom: "conv3_up/depth"
+  top: "conv3_up/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+############################### exchange block: output 30x40 depth from depth net ###############################
+
+layer {
+  name: "conv3_out_pre/depth"
+  type: "Convolution"
+  bottom: "conv3_up/depth"
+  top: "conv3_out_pre/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU3_out_pre/depth"
+  type: "ReLU"
+  bottom: "conv3_out_pre/depth"
+  top: "conv3_out_pre/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "conv3_out_new/depth"
+  type: "Convolution"
+  bottom: "conv3_out_pre/depth"
+  top: "conv3_out/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 1
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+
+
+layer{
+  name: "crop_depth_3/depth"
+  type: "Crop"
+  bottom: "conv3_out/depth"
+  bottom: "dummydata/3"
+  top: "crop_invdepth_3/depth"
+  crop_param{
+    axis: 2
+    offset: 1
+    offset: 0
+  }
+}
+
+############################### exchange block: output 30x40 optical flow to opt net ###############################
+
+layer {
+  name: "depth2opt_3"
+  type: "Depth2Opt"
+  bottom: "crop_invdepth_3/depth"
+  bottom: "data_T"
+  bottom: "data_K/3"
+  top: "optflow_3/from_depth"
+}
+
+############################### exchange block: input 30x40 optical flow to opt net ###############################
+
+layer {
+  name: "flowwarp_fromopt_2/opt"
+  type: "Warp"
+  bottom: "data_rgb_ref/3"
+  bottom: "data_rgb_nei/3"
+  bottom: "invdepth_checked_3/from_opt"
+  bottom: "data_T"
+  bottom: "data_K/3"
+  top: "warp_rgb_fromopt_3/opt"
+}
+
+layer {
+  name: "flowwarp_fromdepth_2/opt"
+  type: "Warp"
+  bottom: "data_rgb_ref/3"
+  bottom: "data_rgb_nei/3"
+  bottom: "crop_invdepth_3/depth"
+  bottom: "data_T"
+  bottom: "data_K/3"
+  top: "warp_rgb_fromdepth_3/opt"
+}
+
+layer{
+  name: "fuse_rgb_fromopt_2/opt"
+  type: "Concat"
+  bottom: "data_rgb_ref/3"
+  bottom: "warp_rgb_fromopt_3/opt"
+  top: "fuse_rgb_fromopt_2/opt"
+  propagate_down: 0
+  propagate_down: 0
+}
+
+layer{
+  name: "fuse_rgb_fromdepth_2/opt"
+  type: "Concat"
+  bottom: "data_rgb_ref/3"
+  bottom: "warp_rgb_fromdepth_3/opt"
+  top: "fuse_rgb_fromdepth_2/opt"
+  propagate_down: 0
+  propagate_down: 0
+}
+
+# warp optical flow (output from optical flow net)
+layer {
+  name: "conv2_fromopt_rgbpre_1/opt"
+  type: "Convolution"
+  bottom: "fuse_rgb_fromopt_2/opt"
+  top: "conv2_fromopt_rgbpre_1/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 8
+    pad_h: 2
+    pad_w: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_fromopt_rgbpre_1/opt"
+  type: "ReLU"
+  bottom: "conv2_fromopt_rgbpre_1/opt"
+  top: "conv2_fromopt_rgbpre_1/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "conv2_fromopt_rgbpre_2/opt"
+  type: "Convolution"
+  bottom: "conv2_fromopt_rgbpre_1/opt"
+  top: "conv2_fromopt_rgbpre_2/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 12
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_fromopt_rgbpre_2/opt"
+  type: "ReLU"
+  bottom: "conv2_fromopt_rgbpre_2/opt"
+  top: "conv2_fromopt_rgbpre_2/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "conv2_fromopt_rgbpre_3/opt"
+  type: "Convolution"
+  bottom: "conv2_fromopt_rgbpre_2/opt"
+  top: "conv2_fromopt_rgbpre_3/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_fromopt_rgbpre_3/opt"
+  type: "ReLU"
+  bottom: "conv2_fromopt_rgbpre_3/opt"
+  top: "conv2_fromopt_rgbpre_3/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv2_fromopt_optpre_1/opt"
+  type: "Convolution"
+  bottom: "crop_opt_3/opt"
+  top: "conv2_fromopt_optpre_1/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 8
+    pad_w: 1
+    pad_h: 2
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_fromopt_optpre_1/opt"
+  type: "ReLU"
+  bottom: "conv2_fromopt_optpre_1/opt"
+  top: "conv2_fromopt_optpre_1/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv2_fromopt_optpre_2/opt"
+  type: "Convolution"
+  bottom: "conv2_fromopt_optpre_1/opt"
+  top: "conv2_fromopt_optpre_2/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_fromopt_optpre_2/opt"
+  type: "ReLU"
+  bottom: "conv2_fromopt_optpre_2/opt"
+  top: "conv2_fromopt_optpre_2/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer{
+  name: "fuse_rgbopt_fromopt_2/opt"
+  type: "Concat"
+  bottom: "conv2_fromopt_rgbpre_3/opt"
+  bottom: "conv2_fromopt_optpre_2/opt"
+  top: "conv2_fromoptpre_fuse/opt"
+}
+layer {
+  name: "conv2_fromoptpre/opt"
+  type: "Convolution"
+  bottom: "conv2_fromoptpre_fuse/opt"
+  top: "conv2_fromoptpre/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_fromoptpre/opt"
+  type: "ReLU"
+  bottom: "conv2_fromoptpre/opt"
+  top: "conv2_fromoptpre/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+# warp optical flow (output from depth net)
+layer {
+  name: "conv2_fromdepth_rgbpre_1/opt"
+  type: "Convolution"
+  bottom: "fuse_rgb_fromdepth_2/opt"
+  top: "conv2_fromdepth_rgbpre_1/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 8
+    pad_h: 2
+    pad_w: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_fromdepth_rgbpre_1/opt"
+  type: "ReLU"
+  bottom: "conv2_fromdepth_rgbpre_1/opt"
+  top: "conv2_fromdepth_rgbpre_1/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv2_fromdepth_rgbpre_2/opt"
+  type: "Convolution"
+  bottom: "conv2_fromdepth_rgbpre_1/opt"
+  top: "conv2_fromdepth_rgbpre_2/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 12
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_fromdepth_rgbpre_2/opt"
+  type: "ReLU"
+  bottom: "conv2_fromdepth_rgbpre_2/opt"
+  top: "conv2_fromdepth_rgbpre_2/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv2_fromdepth_rgbpre_3/opt"
+  type: "Convolution"
+  bottom: "conv2_fromdepth_rgbpre_2/opt"
+  top: "conv2_fromdepth_rgbpre_3/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_fromdepth_rgbpre_3/opt"
+  type: "ReLU"
+  bottom: "conv2_fromdepth_rgbpre_3/opt"
+  top: "conv2_fromdepth_rgbpre_3/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv2_fromdepth_optpre_1/opt"
+  type: "Convolution"
+  bottom: "optflow_3/from_depth"
+  top: "conv2_fromdepth_optpre_1/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 8
+    pad_w: 1
+    pad_h: 2
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_fromdepth_optpre_1/opt"
+  type: "ReLU"
+  bottom: "conv2_fromdepth_optpre_1/opt"
+  top: "conv2_fromdepth_optpre_1/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv2_fromdepth_optpre_2/opt"
+  type: "Convolution"
+  bottom: "conv2_fromdepth_optpre_1/opt"
+  top: "conv2_fromdepth_optpre_2/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_fromdepth_optpre_2/opt"
+  type: "ReLU"
+  bottom: "conv2_fromdepth_optpre_2/opt"
+  top: "conv2_fromdepth_optpre_2/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer{
+  name: "fuse_rgbopt_fromdepth_2/opt"
+  type: "Concat"
+  bottom: "conv2_fromdepth_rgbpre_3/opt"
+  bottom: "conv2_fromdepth_optpre_2/opt"
+  top: "conv2_fromdepthpre_fuse/opt"
+}
+layer {
+  name: "conv2_fromdepthpre/opt"
+  type: "Convolution"
+  bottom: "conv2_fromdepthpre_fuse/opt"
+  top: "conv2_fromdepthpre/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_fromdepthpre/opt"
+  type: "ReLU"
+  bottom: "conv2_fromdepthpre/opt"
+  top: "conv2_fromdepthpre/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+# fuse information
+layer{
+  name: "Fuse_2/opt"
+  type: "Concat"
+  bottom: "conv2_fromoptpre/opt"
+  bottom: "conv2_fromdepthpre/opt"
+  top: "fuse_opt_2/opt"
+}
+
+layer {
+  name: "conv2_optpre_new/opt"
+  type: "Convolution"
+  bottom: "fuse_opt_2/opt"
+  top: "conv2_optpre/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_optpre/opt"
+  type: "ReLU"
+  bottom: "conv2_optpre/opt"
+  top: "conv2_optpre/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+############################### optical flow network: 60x80 ###############################
+
+layer{
+  name: "merge_2/opt"
+  type: "Concat"
+  bottom: "conv2_optpre/opt"
+  bottom: "conv3_up/opt"
+  top: "merge_2/opt"
+}
+
+layer {
+  name: "deconv2/opt"
+  type: "Deconvolution"
+  bottom: "merge_2/opt"
+  top: "deconv2/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLUde2/opt"
+  type: "ReLU"
+  bottom: "deconv2/opt"
+  top: "deconv2/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "Concat2/opt"
+  type: "Concat"
+  bottom: "conv2a/opt"
+  bottom: "deconv2/opt"
+  top: "concat2/opt"
+}
+
+layer {
+  name: "conv2_up/opt"
+  type: "Convolution"
+  bottom: "concat2/opt"
+  top: "conv2_up/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_up/opt"
+  type: "ReLU"
+  bottom: "conv2_up/opt"
+  top: "conv2_up/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+############################### exchange block: output 60x80 optical flow from opt net ###############################
+
+layer {
+  name: "conv2_out_pre/opt"
+  type: "Convolution"
+  bottom: "conv2_up/opt"
+  top: "conv2_out_pre/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_out_pre/opt"
+  type: "ReLU"
+  bottom: "conv2_out_pre/opt"
+  top: "conv2_out_pre/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "conv2_out_new/opt"
+  type: "Convolution"
+  bottom: "conv2_out_pre/opt"
+  top: "conv2_out/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 2
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+
+layer{
+  name: "crop_opt_2/opt"
+  type: "Crop"
+  bottom: "conv2_out/opt"
+  bottom: "dummydata/2"
+  top: "crop_opt_2/opt"
+  crop_param{
+    axis: 2
+    offset: 2
+    offset: 0
+  }
+}
+
+############################### exchange block: output 60x80 depth to depth net ###############################
+
+layer{
+  name: "opt2depth_2"
+  type: "Opt2Depth"
+  bottom: "crop_opt_2/opt"
+  bottom: "data_T"
+  bottom: "data_K/2"
+  top: "depth_2/from_opt"
+}
+
+layer {
+  name: "Depth2invDepth_2"
+  type: "Power"
+  bottom: "depth_2/from_opt"
+  top: "invdepth_2/from_opt"
+  power_param {
+    power: -1
+    scale: 1
+    shift: 0.0001
+  }
+}
+
+layer {
+  name: "depthcheck_2"
+  type: "DepthCheck"
+  bottom: "invdepth_2/from_opt"
+  top: "invdepth_checked_2/from_opt"
+  power_param {
+    power: -1
+    scale: 1
+    shift: 0.0001
+  }
+}
+
+############################### depth network: 60x80 ###############################
+
+layer{
+  name: "Fuse_2/depth"
+  type: "Concat"
+  bottom: "invdepth_checked_3/from_opt"
+  bottom: "crop_invdepth_3/depth"
+  top: "fuse_depth_2/depth"
+  propagate_down: 0
+  propagate_down: 0
+}
+
+layer {
+  name: "conv2_depthprepre_new/depth"
+  type: "Convolution"
+  bottom: "fuse_depth_2/depth"
+  top: "conv2_depthprepre/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    pad_h: 2
+    pad_w: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_depthprepre/depth"
+  type: "ReLU"
+  bottom: "conv2_depthprepre/depth"
+  top: "conv2_depthprepre/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "conv2_depthprenew/depth"
+  type: "Convolution"
+  bottom: "conv2_depthprepre/depth"
+  top: "conv2_depthpre/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad_h: 1
+    pad_w: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_depthpre/depth"
+  type: "ReLU"
+  bottom: "conv2_depthpre/depth"
+  top: "conv2_depthpre/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer{
+  name: "merge_2/depth"
+  type: "Concat"
+  bottom: "conv2_depthpre/depth"
+  bottom: "conv3_up/depth"
+  top: "merge_2/depth"
+}
+
+layer {
+  name: "deconv2/depth"
+  type: "Deconvolution"
+  bottom: "merge_2/depth"
+  top: "deconv2/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLUde2/depth"
+  type: "ReLU"
+  bottom: "deconv2/depth"
+  top: "deconv2/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "Concat2/depth"
+  type: "Concat"
+  bottom: "conv2/depth"
+  bottom: "deconv2/depth"
+  top: "concat2/depth"
+}
+
+layer {
+  name: "conv2_up/depth"
+  type: "Convolution"
+  bottom: "concat2/depth"
+  top: "conv2_up/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_up/depth"
+  type: "ReLU"
+  bottom: "conv2_up/depth"
+  top: "conv2_up/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+############################### exchange block: output 30x40 depth map from depth net ###############################
+
+layer {
+  name: "conv2_out_pre/depth"
+  type: "Convolution"
+  bottom: "conv2_up/depth"
+  top: "conv2_out_pre/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU2_out_pre/depth"
+  type: "ReLU"
+  bottom: "conv2_out_pre/depth"
+  top: "conv2_out_pre/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "conv2_out_new/depth"
+  type: "Convolution"
+  bottom: "conv2_out_pre/depth"
+  top: "conv2_out/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 1
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+
+layer{
+  name: "crop_depth_2/depth"
+  type: "Crop"
+  bottom: "conv2_out/depth"
+  bottom: "dummydata/2"
+  top: "crop_invdepth_2/depth"
+  crop_param{
+    axis: 2
+    offset: 2
+    offset: 0
+  }
+}
+
+############################### exchange block: output 60x80 optical flow to opt net ###############################
+
+layer {
+  name: "depth2opt_2"
+  type: "Depth2Opt"
+  bottom: "crop_invdepth_2/depth"
+  bottom: "data_T"
+  bottom: "data_K/2"
+  top: "optflow_2/from_depth"
+}
+############################### exchange block: input 60x80 optical flow to opt net ###############################
+
+layer {
+  name: "flowwarp_fromopt_1/opt"
+  type: "Warp"
+  bottom: "data_rgb_ref/2"
+  bottom: "data_rgb_nei/2"
+  bottom: "invdepth_checked_2/from_opt"
+  bottom: "data_T"
+  bottom: "data_K/2"
+  top: "warp_rgb_fromopt_2/opt"
+}
+
+layer {
+  name: "flowwarp_fromdepth_1/opt"
+  type: "Warp"
+  bottom: "data_rgb_ref/2"
+  bottom: "data_rgb_nei/2"
+  bottom: "crop_invdepth_2/depth"
+  bottom: "data_T"
+  bottom: "data_K/2"
+  top: "warp_rgb_fromdepth_2/opt"
+}
+
+layer{
+  name: "fuse_rgb_fromopt_1/opt"
+  type: "Concat"
+  bottom: "data_rgb_ref/2"
+  bottom: "warp_rgb_fromopt_2/opt"
+  top: "fuse_rgb_fromopt_1/opt"
+  propagate_down: 0
+  propagate_down: 0
+}
+
+layer{
+  name: "fuse_rgb_fromdepth_1/opt"
+  type: "Concat"
+  bottom: "data_rgb_ref/2"
+  bottom: "warp_rgb_fromdepth_2/opt"
+  top: "fuse_rgb_fromdepth_1/opt"
+  propagate_down: 0
+  propagate_down: 0
+}
+
+#------------- warp from opt opt 
+
+layer {
+  name: "conv1_fromopt_rgbpre_1/opt"
+  type: "Convolution"
+  bottom: "fuse_rgb_fromopt_1/opt"
+  top: "conv1_fromopt_rgbpre_1/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 8
+    pad_h: 3
+    pad_w: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_fromopt_rgbpre_1/opt"
+  type: "ReLU"
+  bottom: "conv1_fromopt_rgbpre_1/opt"
+  top: "conv1_fromopt_rgbpre_1/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv1_fromopt_rgbpre_2/opt"
+  type: "Convolution"
+  bottom: "conv1_fromopt_rgbpre_1/opt"
+  top: "conv1_fromopt_rgbpre_2/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 12
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_fromopt_rgbpre_2/opt"
+  type: "ReLU"
+  bottom: "conv1_fromopt_rgbpre_2/opt"
+  top: "conv1_fromopt_rgbpre_2/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv1_fromopt_rgbpre_3/opt"
+  type: "Convolution"
+  bottom: "conv1_fromopt_rgbpre_2/opt"
+  top: "conv1_fromopt_rgbpre_3/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_fromopt_rgbpre_3/opt"
+  type: "ReLU"
+  bottom: "conv1_fromopt_rgbpre_3/opt"
+  top: "conv1_fromopt_rgbpre_3/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv1_fromopt_optpre_1/opt"
+  type: "Convolution"
+  bottom: "crop_opt_2/opt"
+  top: "conv1_fromopt_optpre_1/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 8
+    pad_w: 1
+    pad_h: 3
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_fromopt_optpre_1/opt"
+  type: "ReLU"
+  bottom: "conv1_fromopt_optpre_1/opt"
+  top: "conv1_fromopt_optpre_1/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv1_fromopt_optpre_2/opt"
+  type: "Convolution"
+  bottom: "conv1_fromopt_optpre_1/opt"
+  top: "conv1_fromopt_optpre_2/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_fromopt_optpre_2/opt"
+  type: "ReLU"
+  bottom: "conv1_fromopt_optpre_2/opt"
+  top: "conv1_fromopt_optpre_2/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer{
+  name: "fuse_rgbopt_fromopt_1/opt"
+  type: "Concat"
+  bottom: "conv1_fromopt_rgbpre_3/opt"
+  bottom: "conv1_fromopt_optpre_2/opt"
+  top: "conv1_fromoptpre_fuse/opt"
+}
+layer {
+  name: "conv1_fromoptpre/opt"
+  type: "Convolution"
+  bottom: "conv1_fromoptpre_fuse/opt"
+  top: "conv1_fromoptpre/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_fromoptpre/opt"
+  type: "ReLU"
+  bottom: "conv1_fromoptpre/opt"
+  top: "conv1_fromoptpre/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+#------------- warp from depth opt
+
+layer {
+  name: "conv1_fromdepth_rgbpre_1/opt"
+  type: "Convolution"
+  bottom: "fuse_rgb_fromdepth_1/opt"
+  top: "conv1_fromdepth_rgbpre_1/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 8
+    pad_h: 3
+    pad_w: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_fromdepth_rgbpre_1/opt"
+  type: "ReLU"
+  bottom: "conv1_fromdepth_rgbpre_1/opt"
+  top: "conv1_fromdepth_rgbpre_1/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv1_fromdepth_rgbpre_2/opt"
+  type: "Convolution"
+  bottom: "conv1_fromdepth_rgbpre_1/opt"
+  top: "conv1_fromdepth_rgbpre_2/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 12
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_fromdepth_rgbpre_2/opt"
+  type: "ReLU"
+  bottom: "conv1_fromdepth_rgbpre_2/opt"
+  top: "conv1_fromdepth_rgbpre_2/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv1_fromdepth_rgbpre_3/opt"
+  type: "Convolution"
+  bottom: "conv1_fromdepth_rgbpre_2/opt"
+  top: "conv1_fromdepth_rgbpre_3/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_fromdepth_rgbpre_3/opt"
+  type: "ReLU"
+  bottom: "conv1_fromdepth_rgbpre_3/opt"
+  top: "conv1_fromdepth_rgbpre_3/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv1_fromdepth_optpre_1/opt"
+  type: "Convolution"
+  bottom: "optflow_2/from_depth"
+  top: "conv1_fromdepth_optpre_1/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 8
+    pad_w: 1
+    pad_h: 3
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_fromdepth_optpre_1/opt"
+  type: "ReLU"
+  bottom: "conv1_fromdepth_optpre_1/opt"
+  top: "conv1_fromdepth_optpre_1/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv1_fromdepth_optpre_2/opt"
+  type: "Convolution"
+  bottom: "conv1_fromdepth_optpre_1/opt"
+  top: "conv1_fromdepth_optpre_2/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_fromdepth_optpre_2/opt"
+  type: "ReLU"
+  bottom: "conv1_fromdepth_optpre_2/opt"
+  top: "conv1_fromdepth_optpre_2/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer{
+  name: "fuse_rgbopt_fromdepth_1/opt"
+  type: "Concat"
+  bottom: "conv1_fromdepth_rgbpre_3/opt"
+  bottom: "conv1_fromdepth_optpre_2/opt"
+  top: "conv1_fromdepthpre_fuse/opt"
+}
+layer {
+  name: "conv1_fromdepthpre/opt"
+  type: "Convolution"
+  bottom: "conv1_fromdepthpre_fuse/opt"
+  top: "conv1_fromdepthpre/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_fromdepthpre/opt"
+  type: "ReLU"
+  bottom: "conv1_fromdepthpre/opt"
+  top: "conv1_fromdepthpre/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+# fuse information
+layer{
+  name: "Fuse_1/opt"
+  type: "Concat"
+  bottom: "conv1_fromoptpre/opt"
+  bottom: "conv1_fromdepthpre/opt"
+  top: "fuse_opt_1/opt"
+}
+layer {
+  name: "conv1_optpre_new/opt"
+  type: "Convolution"
+  bottom: "fuse_opt_1/opt"
+  top: "conv1_optpre/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_optpre/opt"
+  type: "ReLU"
+  bottom: "conv1_optpre/opt"
+  top: "conv1_optpre/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+############################### optical flow network: 120x160 ###############################
+
+layer{
+  name: "merge_1/opt"
+  type: "Concat"
+  bottom: "conv1_optpre/opt"
+  bottom: "conv2_up/opt"
+  top: "merge_1/opt"
+}
+
+layer {
+  name: "deconv1_new/opt"
+  type: "Deconvolution"
+  bottom: "merge_1/opt"
+  top: "deconv1/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLUde1/opt"
+  type: "ReLU"
+  bottom: "deconv1/opt"
+  top: "deconv1/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "Concat1/opt"
+  type: "Concat"
+  bottom: "conv1a/opt"
+  bottom: "deconv1/opt"
+  top: "concat1/opt"
+}
+layer {
+  name: "conv1_up/opt"
+  type: "Convolution"
+  bottom: "concat1/opt"
+  top: "conv1_up/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_up/opt"
+  type: "ReLU"
+  bottom: "conv1_up/opt"
+  top: "conv1_up/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+############################### exchange block: output 120x160 optical flow from opt net ###############################
+
+layer {
+  name: "conv1_out_pre/opt"
+  type: "Convolution"
+  bottom: "conv1_up/opt"
+  top: "conv1_out_pre/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_out_pre/opt"
+  type: "ReLU"
+  bottom: "conv1_out_pre/opt"
+  top: "conv1_out_pre/opt"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv1_out_new/opt"
+  type: "Convolution"
+  bottom: "conv1_out_pre/opt"
+  top: "conv1_out/opt"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 2
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer{
+  name: "crop_opt_1/opt"
+  type: "Crop"
+  bottom: "conv1_out/opt"
+  bottom: "dummydata/1"
+  top: "crop_opt_1/opt"
+  crop_param{
+    axis: 2
+    offset: 4
+    offset: 0
+  }
+}
+
+############################### exchange block: output 120x160 depth map to depth net ###############################
+
+layer{
+  name: "opt2depth_1"
+  type: "Opt2Depth"
+  bottom: "crop_opt_1/opt"
+  bottom: "data_T"
+  bottom: "data_K/1"
+  top: "depth_1/from_opt"
+}
+
+layer {
+  name: "Depth2invDepth_1"
+  type: "Power"
+  bottom: "depth_1/from_opt"
+  top: "invdepth_1/from_opt"
+  power_param {
+    power: -1
+    scale: 1
+    shift: 0.0001
+  }
+}
+
+layer {
+  name: "depthcheck_1"
+  type: "DepthCheck"
+  bottom: "invdepth_1/from_opt"
+  top: "invdepth_checked_1/from_opt"
+  power_param {
+    power: -1
+    scale: 1
+    shift: 0.0001
+  }
+}
+
+############################### depth network: 120x160 ###############################
+
+layer{
+  name: "Fuse_1/depth"
+  type: "Concat"
+  bottom: "invdepth_checked_2/from_opt"
+  bottom: "crop_invdepth_2/depth"
+  top: "fuse_depth_1/depth"
+  propagate_down: 0
+  propagate_down: 0
+}
+
+layer {
+  name: "conv1_depthprepre/depth"
+  type: "Convolution"
+  bottom: "fuse_depth_1/depth"
+  top: "conv1_depthprepre/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 8
+    pad_h: 3
+    pad_w: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_depthprepre/depth"
+  type: "ReLU"
+  bottom: "conv1_depthprepre/depth"
+  top: "conv1_depthprepre/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "conv1_depthprenew/depth"
+  type: "Convolution"
+  bottom: "conv1_depthprepre/depth"
+  top: "conv1_depthpre/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    pad_h: 1
+    pad_w: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_depthpre/depth"
+  type: "ReLU"
+  bottom: "conv1_depthpre/depth"
+  top: "conv1_depthpre/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer{
+  name: "merge_1/depth"
+  type: "Concat"
+  bottom: "conv1_depthpre/depth"
+  bottom: "conv2_up/depth"
+  top: "merge_1/depth"
+}
+
+layer {
+  name: "deconv1/depth"
+  type: "Deconvolution"
+  bottom: "merge_1/depth"
+  top: "deconv1/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLUde1/depth"
+  type: "ReLU"
+  bottom: "deconv1/depth"
+  top: "deconv1/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "Concat1/depth"
+  type: "Concat"
+  bottom: "conv1/depth"
+  bottom: "deconv1/depth"
+  top: "concat1/depth"
+}
+
+layer {
+  name: "conv1_up/depth"
+  type: "Convolution"
+  bottom: "concat1/depth"
+  top: "conv1_up/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_up/depth"
+  type: "ReLU"
+  bottom: "conv1_up/depth"
+  top: "conv1_up/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+############################### exchange block: output 120x160 depth map from depth net ###############################
+
+layer {
+  name: "conv1_out_pre/depth"
+  type: "Convolution"
+  bottom: "conv1_up/depth"
+  top: "conv1_out_pre/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU1_out_pre/depth"
+  type: "ReLU"
+  bottom: "conv1_out_pre/depth"
+  top: "conv1_out_pre/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "conv1_out_new/depth"
+  type: "Convolution"
+  bottom: "conv1_out_pre/depth"
+  top: "conv1_out/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 1
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+
+layer{
+  name: "crop_depth_1/depth"
+  type: "Crop"
+  bottom: "conv1_out/depth"
+  bottom: "dummydata/1"
+  top: "crop_invdepth_1/depth"
+  crop_param{
+    axis: 2
+    offset: 4
+    offset: 0
+  }
+}
+
+############################### exchange block: input 120x160 depth map to depth net ###############################
+
+layer{
+  name: "Fuse_0/depth"
+  type: "Concat"
+  bottom: "invdepth_checked_1/from_opt"
+  bottom: "crop_invdepth_1/depth"
+  top: "fuse_depth_0/depth"
+  propagate_down: 0
+  propagate_down: 0
+}
+
+layer {
+  name: "conv0_depthprepre/depth"
+  type: "Convolution"
+  bottom: "fuse_depth_0/depth"
+  top: "conv0_depthprepre/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 4
+    pad_h: 5
+    pad_w: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU0_depthprepre/depth"
+  type: "ReLU"
+  bottom: "conv0_depthprepre/depth"
+  top: "conv0_depthprepre/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "conv0_depthprenew/depth"
+  type: "Convolution"
+  bottom: "conv0_depthprepre/depth"
+  top: "conv0_depthpre/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 8
+    pad_h: 1
+    pad_w: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU0_depthpre/depth"
+  type: "ReLU"
+  bottom: "conv0_depthpre/depth"
+  top: "conv0_depthpre/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+############################### depth network: 240x320 ###############################
+
+layer{
+  name: "merge_0/depth"
+  type: "Concat"
+  bottom: "conv0_depthpre/depth"
+  bottom: "conv1_up/depth"
+  top: "merge_0/depth"
+}
+
+layer {
+  name: "deconv0/depth"
+  type: "Deconvolution"
+  bottom: "merge_0/depth"
+  top: "deconv0/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLUde0/depth"
+  type: "ReLU"
+  bottom: "deconv0/depth"
+  top: "deconv0/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+layer {
+  name: "conv0_up/depth"
+  type: "Convolution"
+  bottom: "deconv0/depth"
+  top: "conv0_up/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer {
+  name: "ReLU0_up/depth"
+  type: "ReLU"
+  bottom: "conv0_up/depth"
+  top: "conv0_up/depth"
+  relu_param {
+    negative_slope: 0.1
+  }
+}
+
+layer {
+  name: "conv0_out/depth"
+  type: "Convolution"
+  bottom: "conv0_up/depth"
+  top: "conv0_out/depth"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 1
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    engine: CUDNN
+  }
+}
+layer{
+  name: "crop_depth_0/depth"
+  type: "Crop"
+  bottom: "conv0_out/depth"
+  bottom: "dummydata/0"
+  top: "crop_invdepth_0/depth"
+  crop_param{
+    axis: 2
+    offset: 8
+    offset: 0
+  }
+}
