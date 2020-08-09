@@ -1856,8 +1856,6 @@ layer{
   bottom: "data_rgb_ref/3"
   bottom: "warp_rgb_fromopt_3/opt"
   top: "fuse_rgb_fromopt_2/opt"
-  propagate_down: 0
-  propagate_down: 0
 }
 
 layer{
@@ -1866,8 +1864,6 @@ layer{
   bottom: "data_rgb_ref/3"
   bottom: "warp_rgb_fromdepth_3/opt"
   top: "fuse_rgb_fromdepth_2/opt"
-  propagate_down: 0
-  propagate_down: 0
 }
 
 # warp optical flow (output from optical flow net)
@@ -2587,8 +2583,6 @@ layer{
   bottom: "invdepth_checked_3/from_opt"
   bottom: "crop_invdepth_3/depth"
   top: "fuse_depth_2/depth"
-  propagate_down: 0
-  propagate_down: 0
 }
 
 layer {
@@ -2877,8 +2871,6 @@ layer{
   bottom: "data_rgb_ref/2"
   bottom: "warp_rgb_fromopt_2/opt"
   top: "fuse_rgb_fromopt_1/opt"
-  propagate_down: 0
-  propagate_down: 0
 }
 
 layer{
@@ -2887,8 +2879,6 @@ layer{
   bottom: "data_rgb_ref/2"
   bottom: "warp_rgb_fromdepth_2/opt"
   top: "fuse_rgb_fromdepth_1/opt"
-  propagate_down: 0
-  propagate_down: 0
 }
 
 #------------- warp from opt opt 
@@ -3604,8 +3594,6 @@ layer{
   bottom: "invdepth_checked_2/from_opt"
   bottom: "crop_invdepth_2/depth"
   top: "fuse_depth_1/depth"
-  propagate_down: 0
-  propagate_down: 0
 }
 
 layer {
@@ -3862,8 +3850,6 @@ layer{
   bottom: "invdepth_checked_1/from_opt"
   bottom: "crop_invdepth_1/depth"
   top: "fuse_depth_0/depth"
-  propagate_down: 0
-  propagate_down: 0
 }
 
 layer {
